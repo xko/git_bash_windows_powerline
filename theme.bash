@@ -7,9 +7,9 @@
 # More info about color codes in https://en.wikipedia.org/wiki/ANSI_escape_code
 
 
-PROMPT_CHAR=${POWERLINE_PROMPT_CHAR:=""}
+PROMPT_CHAR=${POWERLINE_PROMPT_CHAR:=""}
 POWERLINE_LEFT_SEPARATOR=" "
-POWERLINE_PROMPT="last_status user_info cwd scm"
+POWERLINE_PROMPT="last_status cwd scm"
 
 USER_INFO_SSH_CHAR=" "
 USER_INFO_PROMPT_COLOR="C B"
@@ -27,7 +27,7 @@ SCM_PROMPT_STAGED_COLOR="Y Bl"
 SCM_PROMPT_UNSTAGED_COLOR="R Bl"
 SCM_PROMPT_COLOR=${SCM_PROMPT_CLEAN_COLOR}
 
-CWD_PROMPT_COLOR="B C"
+CWD_PROMPT_COLOR="B W"
 
 STATUS_PROMPT_COLOR="Bl R B"
 STATUS_PROMPT_ERROR="✘"
@@ -87,6 +87,7 @@ function __powerline_user_info_prompt {
 }
 
 function __powerline_cwd_prompt {
+  [[ SEGMENTS_AT_LEFT -eq 0 ]] && echo -n " " 
   echo "\w|${CWD_PROMPT_COLOR}"
 }
 
@@ -196,7 +197,7 @@ function __powerline_left_segment {
 function __powerline_last_status_prompt {
   local symbols=()
   [[ $last_status -ne 0 ]] && symbols+="$(__color ${STATUS_PROMPT_ERROR_COLOR})${STATUS_PROMPT_ERROR}"
-  [[ $UID -eq 0 ]] && symbols+="$(__color ${STATUS_PROMPT_ROOT_COLOR})${STATUS_PROMPT_ROOT}"
+  [[ $(sfc 2>&1 | tr -d '\0') =~ SCANNOW ]] && symbols+="$(__color ${STATUS_PROMPT_ROOT_COLOR})${STATUS_PROMPT_ROOT}"
   [[ $(jobs -l | wc -l) -gt 0 ]] && symbols+="$(__color ${STATUS_PROMPT_JOBS_COLOR})${STATUS_PROMPT_JOBS}"
 
   [[ -n "$symbols" ]] && echo "$symbols|${STATUS_PROMPT_COLOR}"
